@@ -1,7 +1,6 @@
 import org.example.Comments
 import org.example.NoteService.add
-import org.example.NoteService.clearComments
-import org.example.NoteService.clearNotes
+import org.example.NoteService.clearForTests
 import org.example.NoteService.createComment
 import org.example.NoteService.delete
 import org.example.NoteService.deleteComment
@@ -115,7 +114,10 @@ class NoteServiceTest {
 
     @Test
     fun deleteCommentTest() {
-        val note = Notes(
+        val comment = Comments(
+            commentID = 0, ownerID = 777, message = "Тестовый комментарий", isDeleted = false
+        )
+        add(note = Notes(
             noteID = 0,
             ownerID = 777,
             title = "Тестовый заголовок",
@@ -125,11 +127,7 @@ class NoteServiceTest {
             commentPrivacy = 0,
             privacyView = "Not",
             privacyComment = "Not"
-        )
-        val comment = Comments(
-            commentID = 0, ownerID = 777, message = "Тестовый комментарий", isDeleted = false
-        )
-        add(note)
+        ))
         createComment(1, comment)
         val index = deleteComment(1, 1)
         assertEquals(1, index)
@@ -443,7 +441,6 @@ class NoteServiceTest {
         @Before
         fun clearBeforeTest() {
             // Очищаем список постов и комментов перед каждым тестом
-            clearNotes()
-            clearComments()
+            clearForTests()
         }
     }

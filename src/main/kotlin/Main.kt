@@ -44,6 +44,7 @@ fun main() {
 
     with(NoteService) {
         add(note1)
+        add(note2)
         createComment(1, comment1)
         createComment(1, comment2)
 ////        edit(note2)

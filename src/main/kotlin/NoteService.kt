@@ -4,24 +4,29 @@ object NoteService {
     var notes: MutableList<Notes> = mutableListOf()
     var comments: MutableList<Comments> = mutableListOf()
 
+    private var startNoteId = 0
+    private var startCommentId = 0
+
     fun add(note: Notes): Notes {
-        val newNote = note.copy(noteID = notes.size + 1)
+        startNoteId++
+        val newNote = note.copy(noteID = startNoteId)
         newNote.comments = mutableListOf()
         notes += newNote
         return newNote
     }
 
     fun createComment(noteId: Int, comment: Comments): Comments {
+        startCommentId++
         val note = getById(noteId) ?: throw ObjectNotFoundException("Заметка с ID $noteId не найдена")
-        val newComment = comment.copy(commentID = note.comments.size + 1)
+        val newComment = comment.copy(commentID = startCommentId)
         comments += newComment
         note.comments.add(newComment)
         return newComment
     }
 
     fun delete(noteId: Int): Int {
-        getById(noteId) ?: throw ObjectNotFoundException("Заметка с ID $noteId не найдена")
-        notes.removeAt(noteId - 1)
+        val note = getById(noteId) ?: throw ObjectNotFoundException("Заметка с ID $noteId не найдена")
+        notes.remove(note)
         return 1
     }
 
@@ -34,9 +39,13 @@ object NoteService {
     }
 
     fun edit(newNote: Notes): Int {
-        val note = getById(newNote.noteID) ?: throw ObjectNotFoundException("Заметка с ID ${newNote.noteID} не найдена")
-        notes[note.noteID - 1] = newNote.copy()
-        return 1
+        for (index in notes.indices) {
+            if (notes[index].noteID == newNote.noteID) {
+                notes[index] = newNote.copy()
+                return 1
+            }
+        }
+        throw ObjectNotFoundException("Заметка с ID ${newNote.noteID} не найдена")
     }
 
     fun editComment(noteId: Int, comment: Comments): Int {
@@ -51,7 +60,6 @@ object NoteService {
         } else {
             throw ObjectNotFoundException("Комментарий с ID ${comment.commentID} удален")
         }
-
     }
 
     fun get(): List<Notes> {
@@ -84,11 +92,11 @@ object NoteService {
         }
     }
 
-    fun clearNotes() {
+    fun clearForTests() {
         notes.clear()
+        comments.clear()
+        startNoteId = 0
+        startCommentId = 0
     }
 
-    fun clearComments() {
-        comments.clear()
-    }
 }
