@@ -92,6 +92,14 @@ object NoteService {
         }
     }
 
+    fun restoreComment(noteId: Int, commentId: Int) : Int {
+        val note = getById(noteId) ?: throw ObjectNotFoundException("Заметка с ID $noteId не найдена")
+        val commentToRestore = note.comments.find { it.commentID == commentId && it.isDeleted }
+            ?: throw ObjectNotFoundException("Комментарий с ID $commentId в заметке $noteId не найден")
+        commentToRestore.isDeleted = false
+        return 1
+    }
+
     fun clearForTests() {
         notes.clear()
         comments.clear()

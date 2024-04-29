@@ -10,6 +10,7 @@ import org.example.NoteService.get
 import org.example.NoteService.getComments
 import org.example.NoteService.notes
 import org.example.NoteService.printNotes
+import org.example.NoteService.restoreComment
 import org.example.Notes
 import org.example.ObjectNotFoundException
 import org.junit.Assert.assertEquals
@@ -117,17 +118,19 @@ class NoteServiceTest {
         val comment = Comments(
             commentID = 0, ownerID = 777, message = "Тестовый комментарий", isDeleted = false
         )
-        add(note = Notes(
-            noteID = 0,
-            ownerID = 777,
-            title = "Тестовый заголовок",
-            text = "Тело заметки",
-            comments = mutableListOf(),
-            privacy = 0,
-            commentPrivacy = 0,
-            privacyView = "Not",
-            privacyComment = "Not"
-        ))
+        add(
+            note = Notes(
+                noteID = 0,
+                ownerID = 777,
+                title = "Тестовый заголовок",
+                text = "Тело заметки",
+                comments = mutableListOf(),
+                privacy = 0,
+                commentPrivacy = 0,
+                privacyView = "Not",
+                privacyComment = "Not"
+            )
+        )
         createComment(1, comment)
         val index = deleteComment(1, 1)
         assertEquals(1, index)
@@ -438,9 +441,99 @@ class NoteServiceTest {
         notes.add(note)
         printNotes()
     }
-        @Before
-        fun clearBeforeTest() {
-            // Очищаем список постов и комментов перед каждым тестом
-            clearForTests()
-        }
+
+    @Test
+    fun restoreCommentTest() {
+        val note = Notes(
+            noteID = 0,
+            ownerID = 777,
+            title = "Тестовый заголовок",
+            text = "Тело заметки",
+            comments = mutableListOf(),
+            privacy = 0,
+            commentPrivacy = 0,
+            privacyView = "Not",
+            privacyComment = "Not"
+        )
+        val comment = Comments(
+            commentID = 0, ownerID = 777, message = "Тестовый комментарий", isDeleted = true
+        )
+        add(note)
+        createComment(1, comment)
+        val check = restoreComment(1,1)
+        assertEquals(1, check)
     }
+
+    @Test(expected = ObjectNotFoundException::class)
+    fun restoreCommentExceptionForNonDeletedComment() {
+        val note = Notes(
+            noteID = 0,
+            ownerID = 777,
+            title = "Тестовый заголовок",
+            text = "Тело заметки",
+            comments = mutableListOf(),
+            privacy = 0,
+            commentPrivacy = 0,
+            privacyView = "Not",
+            privacyComment = "Not"
+        )
+        val comment = Comments(
+            commentID = 0, ownerID = 777, message = "Тестовый комментарий", isDeleted = false
+        )
+        add(note)
+        createComment(1, comment)
+        restoreComment(1, 1)
+
+    }
+
+    @Test(expected = ObjectNotFoundException::class)
+    fun restoreCommentExceptionForNonExistingComment() {
+        val note = Notes(
+            noteID = 0,
+            ownerID = 777,
+            title = "Тестовый заголовок",
+            text = "Тело заметки",
+            comments = mutableListOf(),
+            privacy = 0,
+            commentPrivacy = 0,
+            privacyView = "Not",
+            privacyComment = "Not"
+        )
+        val comment = Comments(
+            commentID = 0, ownerID = 777, message = "Тестовый комментарий", isDeleted = true
+        )
+        add(note)
+        createComment(1, comment)
+        restoreComment(1, 2)
+
+    }
+
+    @Test(expected = ObjectNotFoundException::class)
+    fun restoreCommentExceptionForNonExistingNote() {
+        val note = Notes(
+            noteID = 0,
+            ownerID = 777,
+            title = "Тестовый заголовок",
+            text = "Тело заметки",
+            comments = mutableListOf(),
+            privacy = 0,
+            commentPrivacy = 0,
+            privacyView = "Not",
+            privacyComment = "Not"
+        )
+        val comment = Comments(
+            commentID = 0, ownerID = 777, message = "Тестовый комментарий", isDeleted = true
+        )
+        add(note)
+        createComment(1, comment)
+        restoreComment(2, 1)
+
+    }
+
+
+    @Before
+    fun clearBeforeTest() {
+        // Очищаем список постов и комментов перед каждым тестом
+        clearForTests()
+    }
+}
